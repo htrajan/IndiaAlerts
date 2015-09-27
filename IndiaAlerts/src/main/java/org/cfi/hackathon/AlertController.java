@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -18,17 +17,15 @@ public class AlertController {
     
 	@Autowired IndiaAlertService service;
 	
-    @RequestMapping("/")
+    @RequestMapping("/index")
     public String index() throws MessagingException, IOException {
     	service.sendAmberAlert();
         return "Greetings from Spring Boot!";
     }
     
-    @RequestMapping(value = "/broadcast", method = RequestMethod.POST)
-    @ResponseBody
-    public String broadcast(@RequestBody IndiaAlert alert)
+    @RequestMapping(value = "/broadcastAlert", method = RequestMethod.POST)
+    public void broadcast(@RequestBody IndiaAlert alert)
     {
     	System.out.println(alert);
-    	return "SUCCESS";
     }
 }

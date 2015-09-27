@@ -9,17 +9,11 @@ postApp.controller('postController', function($scope, $http) {
 		// Posting data to rest service
 		$http({
 			method  : 'POST',
-			url     : '/broadcast',
+			url     : '/broadcastAlert',
 			data    : $scope.alert, //forms alert object
-			headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			headers : {"Content-Type": "application/json"} 
 		})
 		.success(function(data) {
-			if (data.errors) {
-				// Showing errors.
-
-			} else {
-				$scope.message = data.message;
-			}
 		});
 	};
 });
