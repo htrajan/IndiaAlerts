@@ -16,16 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AlertController {
     
 	@Autowired IndiaAlertService service;
-	
-    @RequestMapping("/index")
-    public String index() throws MessagingException, IOException {
-    	service.sendAmberAlert();
-        return "Greetings from Spring Boot!";
-    }
     
     @RequestMapping(value = "/broadcastAlert", method = RequestMethod.POST)
-    public void broadcast(@RequestBody IndiaAlert alert)
+    public void broadcast(@RequestBody IndiaAlert alert) throws MessagingException, IOException
     {
     	System.out.println(alert);
+    	service.sendIndiaAlert(alert);
     }
 }

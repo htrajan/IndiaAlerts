@@ -70,7 +70,7 @@ public class IndiaAlertService
 	    return store;
 	}
 	
-	public void sendAmberAlert() throws MessagingException, IOException
+	public void sendIndiaAlert(IndiaAlert alert) throws MessagingException, IOException
 	{
 		Store store = getIMAPStore();
 		Folder inbox = store.getFolder("INBOX");
@@ -106,10 +106,10 @@ public class IndiaAlertService
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
 			// Set Subject: header field
-			message.setSubject("INDIA ALERT");
+			message.setSubject(alert.getRegion() + " AMBER Alert");
 
 			// Now set the actual message
-			message.setText("This is actual message");
+			message.setText(alert.getTitle() + " / " + alert.getDescription());
 
 			// Send message
 			Transport.send(message);
