@@ -1,5 +1,6 @@
 // Defining angularjs application.
 var postApp = angular.module('postApp', []);
+
 // Controller function and passing $http service and $scope var.
 postApp.controller('postController', function($scope, $http) {
 	// create a blank object to handle form data.

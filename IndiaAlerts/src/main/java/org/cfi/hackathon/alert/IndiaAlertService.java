@@ -1,6 +1,8 @@
 package org.cfi.hackathon.alert;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Flags;
@@ -14,11 +16,15 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.cfi.hackathon.subscriber.Subscriber;
+import org.cfi.hackathon.subscriber.Subscriber.Carrier;
 import org.springframework.stereotype.Service;
 
 @Service
 public class IndiaAlertService 
 {
+	private List<Subscriber> subscribers = new LinkedList<Subscriber>();
+	
 	private Session getSMTPSession()
 	{
 		String username = "code.india.alerts@gmail.com";
@@ -79,23 +85,27 @@ public class IndiaAlertService
 		{
 			for (Message msg : inbox.getMessages())
 			{
-				Object content = msg.getContent();
-				if (msg.getSubject().startsWith("SMS") && content.equals("SUBSCRIBE\r\n"))
+				if (msg.getSubject().startsWith("SMS"))
 				{
-					System.out.println(msg.getSubject() + " " + msg.getContent());
+					Subscriber subscriber = new Subscriber();
+					String content = (String) msg.getContent();
+					String from = msg.getFrom()[0].toString();
+					String number = from.split("\\.")[1];
+					Carrier carrier = Subscriber.getCarrier(content.substring(0, content.length() - 2));
+					subscriber.setNumber(number);
+					subscriber.setCarrier(carrier);
+					subscribers.add(subscriber);
 					msg.setFlag(Flags.Flag.DELETED, true);
 				}
 			}
 		}
 		inbox.close(true);
-		
-		// Recipient's email ID needs to be mentioned.
-		String to = "14083947724@tmomail.net";
 
 		// Sender's email ID needs to be mentioned
 		String from = "web@gmail.com";
 
-		try{
+		try
+		{
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(getSMTPSession());
 
@@ -103,8 +113,10 @@ public class IndiaAlertService
 			message.setFrom(new InternetAddress(from));
 
 			// Set To: header field of the header.
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-
+			for (Subscriber subscriber : subscribers)
+			{
+				message.addRecipient(Message.RecipientType.TO, new InternetAddress(subscriber.getAddress()));
+			}
 			// Set Subject: header field
 			message.setSubject(alert.getRegion() + " AMBER Alert");
 
